@@ -1,14 +1,12 @@
-# === 1. Projektstruktur erstellen ===
-mkdir repairpoint24-crm && cd repairpoint24-crm
-mkdir server client
+// Projekt: Repairpoint24 CRM (intern)
+// Setup: React + Node.js + Express + MongoDB
 
-# === 2. Backend einrichten ===
-cd server
-npm init -y
-npm install express mongoose cors dotenv
+// Verzeichnisstruktur:
+// /client  -> React Frontend
+// /server  -> Express Backend
 
-# Datei: index.js
-cat > index.js << 'EOF'
+// ==== 1. Backend-Grundgerüst (Express) ====
+// Datei: /server/index.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,6 +22,19 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
 
+app.get("/", (req, res) => {
+  res.send("Repairpoint24 CRM Backend läuft.");
+});
+
+// Server starten
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
+});
+
+// ==== 2. Kundenmodell (MongoDB/Mongoose) ====
+// Datei: /server/models/Customer.js
+const mongoose = require("mongoose");
+
 const customerSchema = new mongoose.Schema({
   name: String,
   company: String,
@@ -31,33 +42,16 @@ const customerSchema = new mongoose.Schema({
   phone: String,
   address: String,
   notes: String,
-  createdAt: { type: Date, default: Date.now },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const Customer = mongoose.model("Customer", customerSchema);
+module.exports = mongoose.model("Customer", customerSchema);
 
-app.get("/", (req, res) => {
-  res.send("Repairpoint24 CRM Backend läuft.");
-});
-
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
-EOF
-
-# Datei: .env (nicht hochladen)
-cat > .env << 'EOF'
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/repairpoint24_crm
-EOF
-
-cd ..
-
-# === 3. Frontend mit React einrichten ===
-npx create-react-app client
-cd client
-
-# App.js überschreiben
-cat > src/App.js << 'EOF'
+// ==== 3. Start-Frontend (React) ====
+// Datei: /client/src/App.js
 import React from "react";
 
 function App() {
@@ -70,10 +64,6 @@ function App() {
 }
 
 export default App;
-EOF
 
-cd ..
-
-# === Fertig ===
-echo "✔️ Setup abgeschlossen. Starte Backend mit: node server/index.js"
-echo "✔️ Starte Frontend mit: cd client && npm start"
+// ==== 4. .env Beispiel (im /server Ordner, nicht hochladen) ====
+// MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/repairpoint24_crm
